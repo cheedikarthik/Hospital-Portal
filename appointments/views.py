@@ -1,50 +1,81 @@
-from django.shortcuts import render, get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
 from .forms import (
     AppointmentForm,
     MedicalReportForm,
     LoginForm,
     RegisterForm,
 )
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from .models import Doctor, Patient, Appointment, MedicalReport
-from django.db.models import Count
-from django.http import JsonResponse
 
+from .models import (
+    Doctor,
+    Patient,
+    Appointment,
+    MedicalReport,
+)
+
+
+# ==========================================================
+# HOME
+# ==========================================================
 
 def home(request):
-    featured_doctors = Doctor.objects.filter(is_active=True)[:8]
 
-    return render(request, "home.html", {
-        "featured_doctors": featured_doctors
-    })
+    featured_doctors = Doctor.objects.filter(
+        is_active=True
+    )[:8]
 
+    return render(
+        request,
+        "home.html",
+        {
+            "featured_doctors": featured_doctors
+        }
+    )
+
+
+# ==========================================================
+# DOCTOR LIST
+# ==========================================================
 
 def doctor_list(request):
 
-    doctors = Doctor.objects.filter(is_active=True)
+    doctors = Doctor.objects.filter(
+        is_active=True
+    )
 
     search = request.GET.get("search")
-
     department = request.GET.get("department")
 
     if search:
-        doctors = doctors.filter(name__icontains=search)
+        doctors = doctors.filter(
+            name__icontains=search
+        )
 
     if department:
-        doctors = doctors.filter(department=department)
+        doctors = doctors.filter(
+            department=department
+        )
 
-    context = {
-        "doctors": doctors,
-        "search": search,
-        "department": department,
-    }
+    return render(
+        request,
+        "doctors/doctor_list.html",
+        {
+            "doctors": doctors,
+            "search": search,
+            "department": department,
+        }
+    )
 
-    return render(request, "doctors/doctor_list.html", context)
 
+# ==========================================================
+# DOCTOR DETAIL
+# ==========================================================
 
 def doctor_detail(request, pk):
 
@@ -56,14 +87,24 @@ def doctor_detail(request, pk):
     return render(
         request,
         "doctors/doctor_detail.html",
-        {"doctor": doctor}
+        {
+            "doctor": doctor
+        }
     )
+
+
+# ==========================================================
+# BOOK APPOINTMENT
+# ==========================================================
+
 @login_required(login_url="login")
 def book_appointment(request, pk):
 
-    doctor = get_object_or_404(Doctor, id=pk)
+    doctor = get_object_or_404(
+        Doctor,
+        id=pk
+    )
 
-    # All booked slots for this doctor
     booked_slots = Appointment.objects.filter(
         doctor=doctor
     ).values_list(
@@ -71,7 +112,6 @@ def book_appointment(request, pk):
         "time_slot"
     )
 
-    # Available Time Slots
     TIME_SLOTS = [
         "09:00 AM",
         "09:30 AM",
@@ -91,32 +131,43 @@ def book_appointment(request, pk):
 
         if form.is_valid():
 
-            patient = get_object_or_404(
+            patient, created = Patient.objects.get_or_create(
 
-                Patient,
+                user=request.user,
 
-                user=request.user
+                defaults={
 
+                    "name": form.cleaned_data["patient_name"],
+
+                    "age": form.cleaned_data["patient_age"],
+
+                    "gender": form.cleaned_data["patient_gender"],
+
+                    "phone": form.cleaned_data["patient_phone"],
+
+                    "email": form.cleaned_data["patient_email"],
+
+                    "address": form.cleaned_data["patient_address"],
+
+                    "blood_group": form.cleaned_data["patient_blood_group"],
+                }
             )
 
-            patient.name = form.cleaned_data["patient_name"]
+            if not created:
 
-            patient.age = form.cleaned_data["patient_age"]
+                patient.name = form.cleaned_data["patient_name"]
+                patient.age = form.cleaned_data["patient_age"]
+                patient.gender = form.cleaned_data["patient_gender"]
+                patient.phone = form.cleaned_data["patient_phone"]
+                patient.email = form.cleaned_data["patient_email"]
+                patient.address = form.cleaned_data["patient_address"]
+                patient.blood_group = form.cleaned_data["patient_blood_group"]
 
-            patient.gender = form.cleaned_data["patient_gender"]
-
-            patient.email = form.cleaned_data["patient_email"]
-
-            patient.address = form.cleaned_data["patient_address"]
-
-            patient.blood_group = form.cleaned_data["patient_blood_group"]
-
-            patient.save()
+                patient.save()
 
             appointment_date = form.cleaned_data["appointment_date"]
             time_slot = form.cleaned_data["time_slot"]
 
-            # Prevent Double Booking
             if Appointment.objects.filter(
                 doctor=doctor,
                 appointment_date=appointment_date,
@@ -125,7 +176,7 @@ def book_appointment(request, pk):
 
                 messages.error(
                     request,
-                    "This appointment slot is already booked. Please choose another time."
+                    "This slot is already booked."
                 )
 
             else:
@@ -148,28 +199,29 @@ def book_appointment(request, pk):
 
         form = AppointmentForm()
 
-    context = {
-
-        "doctor": doctor,
-
-        "form": form,
-
-        "booked_slots": booked_slots,
-
-        "time_slots": TIME_SLOTS,
-
-        "available_days":doctor.available_days,
-
-    }
-
     return render(
         request,
         "appointments/book.html",
-        context
+        {
+            "doctor": doctor,
+            "form": form,
+            "booked_slots": booked_slots,
+            "time_slots": TIME_SLOTS,
+            "available_days": doctor.available_days,
+        }
     )
+
+
+# ==========================================================
+# AJAX BOOKED SLOTS
+# ==========================================================
+
 def get_booked_slots(request, pk):
 
-    doctor = get_object_or_404(Doctor, id=pk)
+    doctor = get_object_or_404(
+        Doctor,
+        id=pk
+    )
 
     date = request.GET.get("date")
 
@@ -185,19 +237,28 @@ def get_booked_slots(request, pk):
 
     )
 
-    return JsonResponse({
+    return JsonResponse(
+        {
+            "booked_slots": slots
+        }
+    )
 
-        "booked_slots": slots
 
-    })
+# ==========================================================
+# SUCCESS PAGE
+# ==========================================================
+
 def appointment_success(request):
 
     return render(
         request,
         "appointments/success.html"
     )
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+
+
+# ==========================================================
+# PATIENT DASHBOARD
+# ==========================================================
 
 @login_required(login_url="login")
 def patient_dashboard(request):
@@ -214,7 +275,7 @@ def patient_dashboard(request):
 
             "gender": "Male",
 
-            "phone": f"user_{request.user.id}",
+            "phone": "",
 
             "email": request.user.email,
 
@@ -223,30 +284,31 @@ def patient_dashboard(request):
             "blood_group": "O+",
 
         }
-
     )
 
     appointments = Appointment.objects.filter(
         patient=patient
-    ).order_by("-appointment_date")
-
-    context = {
-
-        "patient": patient,
-
-        "appointments": appointments,
-
-    }
+    ).order_by(
+        "-appointment_date"
+    )
 
     return render(
         request,
         "appointments/dashboard.html",
-        context
+        {
+            "patient": patient,
+            "appointments": appointments,
+        }
     )
+
+
+# ==========================================================
+# ADMIN DASHBOARD
+# ==========================================================
+
 @login_required(login_url="login")
 def admin_dashboard(request):
 
-    # Allow only admin/staff users
     if not request.user.is_staff:
 
         messages.error(
@@ -261,9 +323,12 @@ def admin_dashboard(request):
     appointments = Appointment.objects.select_related(
         "doctor",
         "patient"
-    ).order_by("-appointment_date")
+    ).order_by(
+        "-appointment_date"
+    )
 
     if search:
+
         appointments = appointments.filter(
             patient__name__icontains=search
         )
@@ -287,7 +352,18 @@ def admin_dashboard(request):
         "adminpanel/dashboard.html",
         context
     )
+
+
+# ==========================================================
+# UPDATE APPOINTMENT STATUS
+# ==========================================================
+
+@login_required(login_url="login")
 def update_appointment_status(request, pk, status):
+
+    if not request.user.is_staff:
+
+        return redirect("home")
 
     appointment = get_object_or_404(
         Appointment,
@@ -304,14 +380,24 @@ def update_appointment_status(request, pk, status):
     )
 
     return redirect("admin_dashboard")
+
+
+# ==========================================================
+# CREATE MEDICAL REPORT
+# ==========================================================
+
+@login_required(login_url="login")
 def create_medical_report(request, appointment_id):
+
+    if not request.user.is_staff:
+
+        return redirect("home")
 
     appointment = get_object_or_404(
         Appointment,
         id=appointment_id
     )
 
-    # Check if report already exists
     if MedicalReport.objects.filter(
         appointment=appointment
     ).exists():
@@ -338,7 +424,6 @@ def create_medical_report(request, appointment_id):
 
             report.save()
 
-            # Automatically mark appointment completed
             appointment.status = "COMPLETED"
 
             appointment.save()
@@ -372,6 +457,13 @@ def create_medical_report(request, appointment_id):
         }
 
     )
+
+
+# ==========================================================
+# VIEW MEDICAL REPORT
+# ==========================================================
+
+@login_required(login_url="login")
 def view_medical_report(request, appointment_id):
 
     appointment = get_object_or_404(
@@ -399,16 +491,22 @@ def view_medical_report(request, appointment_id):
         }
 
     )
-# ==========================================
-# User Login
-# ==========================================
+
+
+# ==========================================================
+# LOGIN
+# ==========================================================
 
 def login_view(request):
 
     if request.user.is_authenticated:
+
         return redirect("home")
 
-    form = LoginForm(request, data=request.POST or None)
+    form = LoginForm(
+        request,
+        data=request.POST or None
+    )
 
     if request.method == "POST":
 
@@ -419,26 +517,39 @@ def login_view(request):
             login(request, user)
 
             messages.success(
+
                 request,
+
                 f"Welcome {user.first_name or user.username}!"
+
             )
 
             return redirect("home")
 
     return render(
+
         request,
+
         "registration/login.html",
+
         {
+
             "form": form
+
         }
+
     )
 
 
-# ==========================================
-# User Registration
-# ==========================================
+# ==========================================================
+# REGISTER
+# ==========================================================
 
 def register_view(request):
+
+    if request.user.is_authenticated:
+
+        return redirect("home")
 
     form = RegisterForm(request.POST or None)
 
@@ -446,50 +557,112 @@ def register_view(request):
 
         if form.is_valid():
 
-            user = User.objects.create_user(
-                username=form.cleaned_data["username"],
-                email=form.cleaned_data["email"],
+            username = form.cleaned_data["username"]
+
+            email = form.cleaned_data["email"]
+
+            if User.objects.filter(username=username).exists():
+
+                messages.error(
+
+                    request,
+
+                    "Username already exists."
+
+                )
+
+                return render(
+
+                    request,
+
+                    "registration/register.html",
+
+                    {
+
+                        "form": form
+
+                    }
+
+                )
+
+            if User.objects.filter(email=email).exists():
+
+                messages.error(
+
+                    request,
+
+                    "Email already registered."
+
+                )
+
+                return render(
+
+                    request,
+
+                    "registration/register.html",
+
+                    {
+
+                        "form": form
+
+                    }
+
+                )
+
+            User.objects.create_user(
+
+                username=username,
+
+                email=email,
+
                 password=form.cleaned_data["password"],
+
                 first_name=form.cleaned_data["first_name"],
+
                 last_name=form.cleaned_data["last_name"],
+
             )
-            Patient.objects.create(
-                user=user,
-                name=user.get_full_name() or user.username,
-                age=0,
-                gender="Male",
-                phone="",
-                email=user.email,
-                address="",
-                blood_group="O+",
-            )
+
             messages.success(
+
                 request,
+
                 "Registration Successful. Please Login."
+
             )
 
             return redirect("login")
 
     return render(
+
         request,
+
         "registration/register.html",
+
         {
+
             "form": form
+
         }
+
     )
 
 
-# ==========================================
-# Logout
-# ==========================================
+# ==========================================================
+# LOGOUT
+# ==========================================================
 
+@login_required(login_url="login")
 def logout_view(request):
 
     logout(request)
 
     messages.success(
+
         request,
+
         "Logged out successfully."
+
     )
 
     return redirect("login")

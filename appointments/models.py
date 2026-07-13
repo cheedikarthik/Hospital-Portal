@@ -110,11 +110,12 @@ class Patient(models.Model):
     )
 
     phone = models.CharField(
-        max_length=15,
-        unique=True
+    max_length=15,
+    blank=True,
+    default=""
     )
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
 
     address = models.TextField()
 
