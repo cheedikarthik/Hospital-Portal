@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: hospital-portal
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn hospital_portal.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: hospital_portal.settings
