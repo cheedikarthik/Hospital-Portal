@@ -300,22 +300,12 @@ Experienced doctors dedicated to your health.
 
 <div class="doctor-card">
 
+{% load static %}
+
 {% if doctor.profile_image %}
-
-<img
-
-src="{{ doctor.profile_image.url }}"
-
-alt="{{ doctor.name }}">
-
+    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.name }}">
 {% else %}
-
-<img
-
-src="https://placehold.co/500x500?text=Doctor"
-
-alt="Doctor">
-
+    <img src="{% static 'doctors/default1.jpg' %}" alt="{{ doctor.name }}">
 {% endif %}
 
 <div class="card-body">
