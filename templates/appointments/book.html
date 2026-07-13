@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Book Appointment
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row g-4">
+
+        <!-- Doctor Card -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-lg border-0">
+
+                {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}"
+                         class="doctor-img card-img-top"
+                         alt="{{ doctor.name }}">
+                {% else %}
+                    <img src="https://placehold.co/500x500?text=Doctor"
+                         class="doctor-img card-img-top"
+                         alt="Doctor">
+                {% endif %}
+
+                <div class="card-body">
+
+                    <h3 class="mb-3">
+                        Dr. {{ doctor.name }}
+                    </h3>
+
+                    <p>
+                        <strong>Department:</strong>
+                        {{ doctor.get_department_display }}
+                    </p>
+
+                    <p>
+                        <strong>Specialization:</strong>
+                        {{ doctor.specialization }}
+                    </p>
+
+                    <p>
+                        <strong>Experience:</strong>
+                        {{ doctor.experience }} Years
+                    </p>
+
+                    <p>
+                        <strong>Consultation Fee:</strong>
+                        ₹{{ doctor.consultation_fee }}
+                    </p>
+
+                    <p>
+                        <strong>Available:</strong>
+                        {{ doctor.available_days }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Appointment Form -->
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">
+                        Book Appointment
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Patient Name
+                                </label>
+                                {{ form.patient_name }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Age
+                                </label>
+                                {{ form.patient_age }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Gender
+                                </label>
+                                {{ form.patient_gender }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Phone
+                                </label>
+                                {{ form.patient_phone }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Email
+                                </label>
+                                {{ form.patient_email }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Blood Group
+                                </label>
+                                {{ form.patient_blood_group }}
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    Address
+                                </label>
+                                {{ form.patient_address }}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-bold">
+                                    Appointment Date
+                                </label>
+
+                                <div class="alert alert-info py-2 mb-2">
+
+                                    <i class="bi bi-calendar-check"></i>
+
+                                    <strong>Doctor Available:</strong>
+
+                                    {{ available_days }}
+
+                                </div>
+
+                                {{ form.appointment_date }}
+
+                                <small class="text-muted">
+
+                                    Please choose a date on one of the available working days.
+
+                                </small>
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label">
+                                    Select Time Slot
+                                </label>
+
+                                <!-- Hidden field -->
+                                {{ form.time_slot }}
+
+                                <div class="slot-grid">
+
+                                    {% for slot in time_slots %}
+
+                                    <button
+                                        type="button"
+                                        id="slot-{{ forloop.counter }}"
+                                        class="slot-btn"
+                                        data-slot="{{ slot }}">
+
+                                        {{ slot }}
+
+                                    </button>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-12 mt-4">
+
+                                {% if booked_slots %}
+
+                                <div class="card border-danger">
+
+                                    <div class="card-header bg-danger text-white">
+
+                                        Already Booked Slots
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <ul class="list-group">
+
+                                            {% for booked in booked_slots %}
+
+                                            <li class="list-group-item d-flex justify-content-between">
+
+                                                <span>
+
+                                                    {{ booked.0 }}
+
+                                                </span>
+
+                                                <span class="badge bg-danger">
+
+                                                    {{ booked.1 }}
+
+                                                </span>
+
+                                            </li>
+
+                                            {% endfor %}
+
+                                        </ul>
+
+                                    </div>
+
+                                </div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="col-12 mt-4">
+
+                                <label class="form-label">
+
+                                    Reason for Visit
+
+                                </label>
+
+                                {{ form.reason }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg w-100">
+
+                                Confirm Appointment
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Admin Dashboard
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5 mt-5">
+
+<div class="row mb-4">
+
+<div class="col">
+
+<h1 class="fw-bold">
+
+Hospital Admin Dashboard
+
+</h1>
+
+<p class="text-muted">
+
+Manage Doctors, Patients and Appointments
+
+</p>
+
+</div>
+
+</div>
+
+
+<!-- Statistics -->
+
+<div class="row g-4 mb-5">
+
+<div class="col-lg-3">
+
+<div class="dashboard-card bg-primary text-white">
+
+<i class="bi bi-person-badge-fill fs-1"></i>
+
+<h2>
+
+{{doctor_count}}
+
+</h2>
+
+<p>
+
+Doctors
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="dashboard-card bg-success text-white">
+
+<i class="bi bi-people-fill fs-1"></i>
+
+<h2>
+
+{{patient_count}}
+
+</h2>
+
+<p>
+
+Patients
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="dashboard-card bg-warning text-dark">
+
+<i class="bi bi-calendar-check-fill fs-1"></i>
+
+<h2>
+
+{{appointment_count}}
+
+</h2>
+
+<p>
+
+Appointments
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="dashboard-card bg-danger text-white">
+
+<i class="bi bi-file-earmark-medical-fill fs-1"></i>
+
+<h2>
+
+{{report_count}}
+
+</h2>
+
+<p>
+
+Medical Reports
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Search -->
+
+<div class="card shadow border-0 mb-4">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="row">
+
+<div class="col-lg-10">
+
+<input
+
+type="text"
+
+class="form-control"
+
+placeholder="Search Patient"
+
+name="search"
+
+value="{{request.GET.search}}">
+
+</div>
+
+<div class="col-lg-2">
+
+<button
+
+class="btn btn-primary w-100">
+
+Search
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- Appointment Table -->
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h4>
+
+Recent Appointments
+
+</h4>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Patient</th>
+
+<th>Doctor</th>
+
+<th>Date</th>
+
+<th>Slot</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for appointment in appointments %}
+
+<tr>
+
+<td>
+
+{{appointment.id}}
+
+</td>
+
+<td>
+
+{{appointment.patient.name}}
+
+</td>
+
+<td>
+
+Dr. {{appointment.doctor.name}}
+
+</td>
+
+<td>
+
+{{appointment.appointment_date}}
+
+</td>
+
+<td>
+
+{{appointment.time_slot}}
+
+</td>
+
+<td>
+
+{% if appointment.status == "PENDING" %}
+
+<span class="badge bg-warning">
+
+Pending
+
+</span>
+
+{% elif appointment.status == "CONFIRMED" %}
+
+<span class="badge bg-success">
+
+Confirmed
+
+</span>
+
+{% elif appointment.status == "COMPLETED" %}
+
+<span class="badge bg-primary">
+
+Completed
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+Cancelled
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<div class="btn-group">
+
+<a
+
+href="{% url 'update_status' appointment.id 'CONFIRMED' %}"
+
+class="btn btn-success btn-sm">
+
+Confirm
+
+</a>
+
+<a
+
+href="{% url 'update_status' appointment.id 'COMPLETED' %}"
+
+class="btn btn-primary btn-sm">
+
+Complete
+
+</a>
+<a
+
+href="{% url 'create_medical_report' appointment.id %}"
+
+class="btn btn-dark btn-sm">
+
+Report
+
+</a>
+
+<a
+
+href="{% url 'update_status' appointment.id 'CANCELLED' %}"
+
+class="btn btn-danger btn-sm">
+
+Cancel
+
+</a>
+
+</div>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="7">
+
+No appointments found.
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Medical Report
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5 mt-5">
+
+<div class="card shadow-lg">
+
+<div class="card-header bg-success text-white">
+
+<h2>
+
+Medical Report
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<h4>
+
+Patient :
+
+{{appointment.patient.name}}
+
+</h4>
+
+<h5>
+
+Doctor :
+
+Dr. {{appointment.doctor.name}}
+
+</h5>
+
+<hr>
+
+<h5>
+
+Diagnosis
+
+</h5>
+
+<p>
+
+{{report.diagnosis}}
+
+</p>
+
+<hr>
+
+<h5>
+
+Prescription
+
+</h5>
+
+<p>
+
+{{report.prescription}}
+
+</p>
+
+<hr>
+
+<h5>
+
+Medicines
+
+</h5>
+
+<p>
+
+{{report.medicines}}
+
+</p>
+
+<hr>
+
+<h5>
+
+Doctor Notes
+
+</h5>
+
+<p>
+
+{{report.doctor_notes}}
+
+</p>
+
+<hr>
+
+<p>
+
+Generated :
+
+{{report.report_date}}
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

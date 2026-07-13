@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Patient Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2 class="mb-4">
+
+Patient Dashboard
+
+</h2>
+
+<div class="card shadow mb-4">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="row">
+
+<div class="col-md-10">
+
+<input
+type="text"
+name="phone"
+class="form-control"
+placeholder="Enter Registered Phone Number"
+value="{{ request.GET.phone }}">
+
+</div>
+
+<div class="col-md-2">
+
+<button
+class="btn btn-primary w-100">
+
+Search
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% if patient %}
+
+<div class="card shadow mb-4">
+
+<div class="card-body">
+
+<h3>{{ patient.name }}</h3>
+
+<p>
+
+<strong>Phone:</strong>
+
+{{ patient.phone }}
+
+</p>
+
+<p>
+
+<strong>Email:</strong>
+
+{{ patient.email }}
+
+</p>
+
+<p>
+
+<strong>Blood Group:</strong>
+
+{{ patient.blood_group }}
+
+</p>
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Date</th>
+
+<th>Doctor</th>
+
+<th>Department</th>
+
+<th>Time</th>
+
+<th>Status</th>
+
+<th>Report</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for appointment in appointments %}
+
+<tr>
+
+<td>
+
+{{ appointment.appointment_date }}
+
+</td>
+
+<td>
+
+Dr. {{ appointment.doctor.name }}
+
+</td>
+
+<td>
+
+{{ appointment.doctor.get_department_display }}
+
+</td>
+
+<td>
+
+{{ appointment.time_slot }}
+
+</td>
+
+<td>
+
+{% if appointment.status == 'PENDING' %}
+
+<span class="badge bg-warning">
+
+Pending
+
+</span>
+
+{% elif appointment.status == 'CONFIRMED' %}
+
+<span class="badge bg-success">
+
+Confirmed
+
+</span>
+
+{% elif appointment.status == 'COMPLETED' %}
+
+<span class="badge bg-secondary">
+
+Completed
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+Cancelled
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if appointment.medicalreport %}
+
+<button
+class="btn btn-success btn-sm">
+
+View Report
+
+</button>
+
+{% else %}
+
+<span class="text-muted">
+
+Not Available
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="6" class="text-center">
+
+No Appointments Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

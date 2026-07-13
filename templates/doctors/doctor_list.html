@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Doctors
+{% endblock %}
+
+{% block content %}
+
+<!-- ========================= -->
+<!-- Page Header -->
+<!-- ========================= -->
+
+<section class="py-5 bg-primary text-white mt-5">
+
+<div class="container text-center">
+
+<h1 class="fw-bold display-5">
+
+Our Doctors
+
+</h1>
+
+<p class="lead">
+
+Find the best specialist for your healthcare needs.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ========================= -->
+<!-- Search & Filter -->
+<!-- ========================= -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="card shadow border-0 mb-5">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="row g-3">
+
+<div class="col-lg-5">
+
+<input
+type="text"
+name="search"
+class="form-control form-control-lg"
+placeholder="Search Doctor..."
+value="{{ search|default:'' }}">
+
+</div>
+
+<div class="col-lg-5">
+
+<select
+name="department"
+class="form-select form-select-lg">
+
+<option value="">All Departments</option>
+
+<option value="CARDIO"
+{% if department == "CARDIO" %}selected{% endif %}>
+Cardiology
+</option>
+
+<option value="PEDIA"
+{% if department == "PEDIA" %}selected{% endif %}>
+Pediatrics
+</option>
+
+<option value="ORTHO"
+{% if department == "ORTHO" %}selected{% endif %}>
+Orthopedics
+</option>
+
+<option value="NEURO"
+{% if department == "NEURO" %}selected{% endif %}>
+Neurology
+</option>
+
+</select>
+
+</div>
+
+<div class="col-lg-2">
+
+<button
+class="btn btn-primary btn-lg w-100">
+
+<i class="bi bi-search"></i>
+
+Search
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- ========================= -->
+<!-- Doctors -->
+<!-- ========================= -->
+
+<div class="row g-4">
+
+{% for doctor in doctors %}
+
+<div class="col-lg-4 col-md-6">
+
+<div class="doctor-card">
+
+{% if doctor.profile_image %}
+
+<img
+src="{{ doctor.profile_image.url }}"
+class="doctor-image"
+alt="{{ doctor.name }}">
+
+{% else %}
+
+<img
+src="https://placehold.co/600x600?text=Doctor"
+class="doctor-image"
+alt="Doctor">
+
+{% endif %}
+
+<div class="card-body">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<h4>
+
+Dr. {{ doctor.name }}
+
+</h4>
+
+<span class="badge bg-success">
+
+Available
+
+</span>
+
+</div>
+
+<p class="speciality">
+
+{{ doctor.specialization }}
+
+</p>
+
+<div class="rating">
+
+★★★★★
+
+</div>
+
+<hr>
+
+<p>
+
+<i class="bi bi-building"></i>
+
+<strong>Department:</strong>
+
+{{ doctor.get_department_display }}
+
+</p>
+
+<p>
+
+<i class="bi bi-award"></i>
+
+<strong>Qualification:</strong>
+
+{{ doctor.qualification }}
+
+</p>
+
+<p>
+
+<i class="bi bi-briefcase-fill"></i>
+
+<strong>Experience:</strong>
+
+{{ doctor.experience }} Years
+
+</p>
+
+<p>
+
+<i class="bi bi-calendar-week"></i>
+
+<strong>Available:</strong>
+
+{{ doctor.available_days }}
+
+</p>
+
+<p>
+
+<i class="bi bi-cash-stack"></i>
+
+<strong>Consultation Fee:</strong>
+
+₹{{ doctor.consultation_fee }}
+
+</p>
+
+<div class="d-grid gap-2 mt-4">
+
+<a
+href="{% url 'doctor_detail' doctor.id %}"
+class="btn btn-outline-primary">
+
+<i class="bi bi-person-lines-fill"></i>
+
+View Profile
+
+</a>
+
+<a
+href="{% url 'book_appointment' doctor.id %}"
+class="btn btn-success">
+
+<i class="bi bi-calendar-check"></i>
+
+Book Appointment
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="col-12">
+
+<div class="alert alert-warning text-center">
+
+<h4>
+
+No doctors found.
+
+</h4>
+
+<p>
+
+Try changing the search keyword or department.
+
+</p>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+
+{% endblock %}

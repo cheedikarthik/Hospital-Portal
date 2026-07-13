@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Register | Hospital Portal
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5" style="margin-top:100px;">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-7 col-md-9">
+
+<div class="card auth-card shadow-lg">
+
+<div class="card-body">
+
+<div class="text-center mb-4">
+
+<i class="bi bi-person-plus-fill text-primary"
+style="font-size:60px;"></i>
+
+<h2 class="mt-3">
+
+Create Your Account
+
+</h2>
+
+<p class="text-muted">
+
+Register to book appointments online.
+
+</p>
+
+</div>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+First Name
+
+</label>
+
+{{ form.first_name }}
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Last Name
+
+</label>
+
+{{ form.last_name }}
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Username
+
+</label>
+
+{{ form.username }}
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Email
+
+</label>
+
+{{ form.email }}
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Password
+
+</label>
+
+<div class="input-group">
+
+{{ form.password }}
+
+<button
+type="button"
+class="btn btn-outline-secondary"
+id="showPassword">
+
+<i class="bi bi-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Confirm Password
+
+</label>
+
+<div class="input-group">
+
+{{ form.confirm_password }}
+
+<button
+type="button"
+class="btn btn-outline-secondary"
+id="showConfirm">
+
+<i class="bi bi-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mb-4">
+
+<div class="progress">
+
+<div
+class="progress-bar"
+id="passwordStrength"
+style="width:0%">
+
+Weak
+
+</div>
+
+</div>
+
+</div>
+
+<button
+
+type="submit"
+
+class="btn btn-primary btn-lg w-100">
+
+<i class="bi bi-person-check-fill"></i>
+
+Create Account
+
+</button>
+
+</form>
+
+<hr>
+
+<div class="text-center">
+
+Already have an account?
+
+<a href="{% url 'login' %}">
+
+Login
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<script>
+
+const password=document.getElementById("id_password");
+
+const confirm=document.getElementById("id_confirm_password");
+
+const strength=document.getElementById("passwordStrength");
+
+password.addEventListener("keyup",function(){
+
+let value=password.value;
+
+let score=0;
+
+if(value.length>=8) score++;
+
+if(/[A-Z]/.test(value)) score++;
+
+if(/[0-9]/.test(value)) score++;
+
+if(/[^A-Za-z0-9]/.test(value)) score++;
+
+const labels=["Weak","Fair","Good","Strong"];
+const widths=["25%","50%","75%","100%"];
+const classes=["bg-danger","bg-warning","bg-info","bg-success"];
+
+strength.className="progress-bar";
+
+if(score>0){
+
+strength.style.width=widths[score-1];
+strength.innerHTML=labels[score-1];
+strength.classList.add(classes[score-1]);
+
+}else{
+
+strength.style.width="0%";
+strength.innerHTML="";
+
+}
+
+});
+
+document.getElementById("showPassword").onclick=function(){
+
+if(password.type==="password"){
+
+password.type="text";
+
+this.innerHTML='<i class="bi bi-eye-slash"></i>';
+
+}else{
+
+password.type="password";
+
+this.innerHTML='<i class="bi bi-eye"></i>';
+
+}
+
+};
+
+document.getElementById("showConfirm").onclick=function(){
+
+if(confirm.type==="password"){
+
+confirm.type="text";
+
+this.innerHTML='<i class="bi bi-eye-slash"></i>';
+
+}else{
+
+confirm.type="password";
+
+this.innerHTML='<i class="bi bi-eye"></i>';
+
+}
+
+};
+
+</script>
+
+{% endblock %}

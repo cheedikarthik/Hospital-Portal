@@ -1,17 +1,925 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
 
-<html>
+{% block title %}
+Venkateswara Hospital's
+{% endblock %}
 
-<head>
+{% block content %}
 
-<title>Hospital Portal</title>
+<!-- =========================
+Hero Section
+========================== -->
 
-</head>
+<section class="hero">
 
-<body>
+<div class="container">
 
-<h1>Hospital Portal Working</h1>
+<div class="row align-items-center">
 
-</body>
+<div class="col-lg-6" data-aos="fade-right">
 
-</html>
+<span class="badge bg-danger px-3 py-2 mb-3">
+
+🏥 India's Trusted Healthcare Platform
+
+</span>
+
+<h1>
+
+Your Health <br>
+
+<span class="text-warning">
+
+Our Priority
+
+</span>
+
+</h1>
+
+<p>
+
+Book appointments with experienced doctors,
+
+consult specialists,
+
+and manage your healthcare from anywhere.
+
+</p>
+
+<div class="hero-search">
+
+<form
+method="GET"
+action="{% url 'doctor_list' %}">
+
+<div class="row g-2">
+
+<div class="col-md-8">
+
+<input
+type="text"
+class="form-control"
+placeholder="Search Doctor, Department..."
+name="search">
+
+</div>
+
+<div class="col-md-4">
+
+<button
+class="btn btn-primary w-100">
+
+<i class="bi bi-search"></i>
+
+Search
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+<div class="mt-4">
+
+<a
+href="{% url 'doctor_list' %}"
+class="btn btn-primary">
+
+Find Doctors
+
+</a>
+
+<a
+href="{% url 'doctor_list' %}"
+class="btn btn-success">
+
+Book Appointment
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-lg-6 text-center"
+
+data-aos="fade-left">
+
+{% load static %}
+
+<img src="{% static 'images/hero-doctor.jpg' %}"
+     class="hero-image"
+     alt="Hero Image">
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =========================
+Departments
+========================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="section-title">
+
+<h2>
+
+Our Departments
+
+</h2>
+
+<p>
+
+Choose a medical department and consult expert doctors.
+
+</p>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+
+<div class="department-card">
+
+<i class="bi bi-heart-pulse-fill"></i>
+
+<h4>
+
+Cardiology
+
+</h4>
+
+<p>
+
+Heart Specialists
+
+</p>
+
+<a href="{% url 'doctor_list' %}?department=CARDIO">
+
+Explore →
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="department-card">
+
+<i class="bi bi-emoji-smile-fill"></i>
+
+<h4>
+
+Pediatrics
+
+</h4>
+
+<p>
+
+Child Care
+
+</p>
+
+<a href="{% url 'doctor_list' %}?department=PEDIA">
+
+Explore →
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="department-card">
+
+<i class="bi bi-universal-access-circle"></i>
+
+<h4>
+
+Orthopedics
+
+</h4>
+
+<p>
+
+Bone Specialists
+
+</p>
+
+<a href="{% url 'doctor_list' %}?department=ORTHO">
+
+Explore →
+
+</a>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="department-card">
+
+<i class="bi bi-cpu-fill"></i>
+
+<h4>
+
+Neurology
+
+</h4>
+
+<p>
+
+Brain Specialists
+
+</p>
+
+<a href="{% url 'doctor_list' %}?department=NEURO">
+
+Explore →
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =========================
+Featured Doctors
+========================== -->
+
+<section class="py-5 bg-light">
+
+<div class="container">
+
+<div class="section-title">
+
+<h2>
+
+Meet Our Specialists
+
+</h2>
+
+<p>
+
+Experienced doctors dedicated to your health.
+
+</p>
+
+</div>
+
+<div class="row g-4">
+
+{% for doctor in featured_doctors %}
+
+<div class="col-lg-3 col-md-6">
+
+<div class="doctor-card">
+
+{% if doctor.profile_image %}
+
+<img
+
+src="{{ doctor.profile_image.url }}"
+
+alt="{{ doctor.name }}">
+
+{% else %}
+
+<img
+
+src="https://placehold.co/500x500?text=Doctor"
+
+alt="Doctor">
+
+{% endif %}
+
+<div class="card-body">
+
+<div class="rating">
+
+★★★★★
+
+</div>
+
+<h4>
+
+Dr. {{ doctor.name }}
+
+</h4>
+
+<p class="speciality">
+
+{{ doctor.specialization }}
+
+</p>
+
+<div class="doctor-info">
+
+<span>
+
+<i class="bi bi-briefcase-fill"></i>
+
+{{ doctor.experience }} Years
+
+</span>
+
+</div>
+
+<div class="doctor-info">
+
+<span>
+
+<i class="bi bi-cash"></i>
+
+₹{{ doctor.consultation_fee }}
+
+</span>
+
+<span>
+
+<span class="badge bg-success">
+
+Available
+
+</span>
+
+</span>
+
+</div>
+
+<a
+
+href="{% url 'doctor_detail' doctor.id %}"
+
+class="btn btn-outline-primary">
+
+View Profile
+
+</a>
+
+<a
+
+href="{% url 'book_appointment' doctor.id %}"
+
+class="btn btn-success">
+
+Book Appointment
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+<!-- =========================
+Statistics
+========================== -->
+
+<section class="stats">
+
+<div class="container">
+
+<div class="row">
+
+<div class="col-lg-3 col-6">
+
+<div class="stat-box">
+
+<i class="bi bi-person-badge-fill"></i>
+
+<h2>50+</h2>
+
+<p>Doctors</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-6">
+
+<div class="stat-box">
+
+<i class="bi bi-people-fill"></i>
+
+<h2>2500+</h2>
+
+<p>Happy Patients</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-6">
+
+<div class="stat-box">
+
+<i class="bi bi-calendar-check-fill"></i>
+
+<h2>12000+</h2>
+
+<p>Appointments</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-6">
+
+<div class="stat-box">
+
+<i class="bi bi-award-fill"></i>
+
+<h2>15+</h2>
+
+<p>Years Experience</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+Why Choose Us
+========================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="section-title">
+
+<h2>
+
+Why Choose Us
+
+</h2>
+
+<p>
+
+Providing quality healthcare with compassion.
+
+</p>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-lg-4">
+
+<div class="department-card">
+
+<i class="bi bi-shield-check"></i>
+
+<h4>
+
+Trusted Doctors
+
+</h4>
+
+<p>
+
+Highly experienced specialists from various medical fields.
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="department-card">
+
+<i class="bi bi-clock-history"></i>
+
+<h4>
+
+24×7 Support
+
+</h4>
+
+<p>
+
+Emergency services and quick appointment booking.
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="department-card">
+
+<i class="bi bi-heart-fill"></i>
+
+<h4>
+
+Patient Care
+
+</h4>
+
+<p>
+
+Modern treatment with personalized healthcare.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+Testimonials
+========================== -->
+
+<section class="py-5 bg-light">
+
+<div class="container">
+
+<div class="section-title">
+
+<h2>
+
+Patient Testimonials
+
+</h2>
+
+<p>
+
+Trusted by thousands of happy patients.
+
+</p>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-lg-4">
+
+<div class="testimonial">
+
+<img src="https://randomuser.me/api/portraits/men/31.jpg">
+
+<div class="stars">
+
+★★★★★
+
+</div>
+
+<p>
+
+Excellent doctors and quick appointment booking.
+Highly recommended.
+
+</p>
+
+<h5>
+
+Rahul Kumar
+
+</h5>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="testimonial">
+
+<img src="https://randomuser.me/api/portraits/women/32.jpg">
+
+<div class="stars">
+
+★★★★★
+
+</div>
+
+<p>
+
+Very friendly staff and professional treatment.
+
+</p>
+
+<h5>
+
+Sneha Reddy
+
+</h5>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="testimonial">
+
+<img src="https://randomuser.me/api/portraits/men/44.jpg">
+
+<div class="stars">
+
+★★★★★
+
+</div>
+
+<p>
+
+The booking process is very easy and doctors are amazing.
+
+</p>
+
+<h5>
+
+Ramesh Sharma
+
+</h5>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+Emergency Section
+========================== -->
+
+<section class="emergency">
+
+<div class="container">
+
+<h2>
+
+Need Emergency Medical Assistance?
+
+</h2>
+
+<p>
+
+Our emergency team is available 24 hours a day.
+
+</p>
+
+<a
+
+href="tel:+919876543210"
+
+class="btn btn-light">
+
+<i class="bi bi-telephone-fill"></i>
+
+Call Now
+
+</a>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+FAQ
+========================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="section-title">
+
+<h2>
+
+Frequently Asked Questions
+
+</h2>
+
+</div>
+
+<div class="accordion"
+
+id="faq">
+
+<div class="accordion-item">
+
+<h2 class="accordion-header">
+
+<button
+
+class="accordion-button"
+
+data-bs-toggle="collapse"
+
+data-bs-target="#faq1">
+
+How can I book an appointment?
+
+</button>
+
+</h2>
+
+<div
+
+id="faq1"
+
+class="accordion-collapse collapse show"
+
+data-bs-parent="#faq">
+
+<div class="accordion-body">
+
+Choose a doctor, select a date, fill in your details,
+and confirm your appointment.
+
+</div>
+
+</div>
+
+</div>
+
+<div class="accordion-item">
+
+<h2 class="accordion-header">
+
+<button
+
+class="accordion-button collapsed"
+
+data-bs-toggle="collapse"
+
+data-bs-target="#faq2">
+
+Can I cancel my appointment?
+
+</button>
+
+</h2>
+
+<div
+
+id="faq2"
+
+class="accordion-collapse collapse"
+
+data-bs-parent="#faq">
+
+<div class="accordion-body">
+
+Yes. Visit your dashboard to manage appointments.
+
+</div>
+
+</div>
+
+</div>
+
+<div class="accordion-item">
+
+<h2 class="accordion-header">
+
+<button
+
+class="accordion-button collapsed"
+
+data-bs-toggle="collapse"
+
+data-bs-target="#faq3">
+
+Are emergency services available?
+
+</button>
+
+</h2>
+
+<div
+
+id="faq3"
+
+class="accordion-collapse collapse"
+
+data-bs-parent="#faq">
+
+<div class="accordion-body">
+
+Yes. Our emergency department is available 24×7.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+Newsletter
+========================== -->
+
+<section class="py-5 bg-primary text-white">
+
+<div class="container text-center">
+
+<h2>
+
+Stay Updated
+
+</h2>
+
+<p>
+
+Subscribe for health tips and hospital updates.
+
+</p>
+
+<form class="row justify-content-center">
+
+<div class="col-lg-6">
+
+<input
+
+type="email"
+
+class="form-control form-control-lg"
+
+placeholder="Enter your Email">
+
+</div>
+
+<div class="col-lg-2">
+
+<button
+
+class="btn btn-warning btn-lg w-100">
+
+Subscribe
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+{% endblock %}

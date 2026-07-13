@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Medical Report
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5 mt-5">
+
+<div class="card shadow-lg">
+
+<div class="card-header bg-primary text-white">
+
+<h2>
+
+Create Medical Report
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<h4>
+
+Patient :
+
+{{appointment.patient.name}}
+
+</h4>
+
+<h5>
+
+Doctor :
+
+Dr. {{appointment.doctor.name}}
+
+</h5>
+
+<hr>
+
+<form method="POST">
+
+{% csrf_token %}
+
+{{form.as_p}}
+
+<button
+
+class="btn btn-success btn-lg">
+
+Save Report
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Dr. {{ doctor.name }}
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+
+<div class="container">
+
+<div class="row">
+
+<!-- Doctor Image -->
+
+<div class="col-lg-4">
+
+<div class="card shadow-lg border-0">
+
+{% if doctor.profile_image %}
+
+<img src="{{ doctor.profile_image.url }}"
+class="doctor-image"
+alt="{{ doctor.name }}">
+
+{% else %}
+
+<img src="https://placehold.co/500x600?text=Doctor"
+class="doctor-image">
+
+{% endif %}
+
+<div class="card-body text-center">
+
+<h3>
+
+Dr. {{ doctor.name }}
+
+</h3>
+
+<p class="speciality">
+
+{{ doctor.specialization }}
+
+</p>
+
+<div class="rating">
+
+★★★★★
+
+</div>
+
+<span class="badge bg-success">
+
+Available Today
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Doctor Details -->
+
+<div class="col-lg-8">
+
+<div class="card shadow-lg border-0">
+
+<div class="card-body p-5">
+
+<h2 class="mb-4">
+
+Doctor Information
+
+</h2>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Department
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.get_department_display }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Qualification
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.qualification }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Experience
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.experience }} Years
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Consultation Fee
+
+</strong>
+
+</p>
+
+<p class="text-success fs-4">
+
+₹{{ doctor.consultation_fee }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Available Days
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.available_days }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Available Time
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.available_time }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Email
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.email }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<p>
+
+<strong>
+
+Phone
+
+</strong>
+
+</p>
+
+<p>
+
+{{ doctor.phone }}
+
+</p>
+
+</div>
+
+</div>
+
+<hr>
+
+<h4>
+
+About Doctor
+
+</h4>
+
+<p>
+
+{{ doctor.about }}
+
+</p>
+
+<div class="mt-4">
+
+<a
+
+href="{% url 'book_appointment' doctor.id %}"
+
+class="btn btn-success btn-lg">
+
+<i class="bi bi-calendar-check"></i>
+
+Book Appointment
+
+</a>
+
+<a
+
+href="{% url 'doctor_list' %}"
+
+class="btn btn-outline-primary btn-lg">
+
+Back
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+{% endblock %}
